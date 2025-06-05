@@ -1,0 +1,52 @@
+#   Yuvan Marimuthu
+#   Countdown Notes
+
+02/06/2025
+    - considering +/- bet implementing countdown functionally or w OOP - decided on functional
+
+    - ensure input validation and sanitisation
+    - don't want to use try, except - error handling can become awkward if you raise errors within code, alternate solution create func isnumber, O(n) time constant space
+    - not sure if its more effective then just standard try/except error handling -> try it casue its new, awkward to reassign variable as integers 
+    - after experimentation and research into memory management, reassigning varaible as integers multiple time wastes memory/creates floating variables in memory (dealt by garbage collector)
+    - using try/except clause for simplicity - need to research into memory management specifically of memory handling of reassigning variables and specifics of floating variables
+
+    - generating numbers and target was trivial, though from initial inspection input validation of trial answers may pose a challenge
+    - need 3 threads, one for timer 30/60s, one to handle guesses, and another to solve w algorithm
+
+    - want to incorporate threading with 30 second timer - allow time for code to compute AI to automate countdown solve
+
+03/06/2025
+    - implementing threading after solve algorithm finished
+    - implemented initial idea for algorithm involving tree structure, shortening list of nums by one each iteration -> recursive algorithm, <=6 child nodes for each node (6 valid operations of arithmetic, no commutativity)
+    - Altered algorithm to store as tuple to include memory of steps to calculate answer 
+    - Issues: May include redundant steps, Slow -> Not sure how to optimise, is it necessary to optimise since max length 6
+    - Issues: If algorithm doesn't find solution, closest solution isn't found
+    - Con, potential means of optimising algorithm - priority queue?
+
+04/06/2025
+    - Implementing threads
+    - Frameworks setup - through implementation noticed certain issues with implementation of algorithm
+
+05/06/2025 
+    - Planning to redesign algorithm to find closest result and to alter algorithm so it stops searching for solutions once solution is found
+    - Algorithm already stops once solution found, as wanted
+    - Recursive Structure goes back step by step, so only outputs step 1 of answer
+    - Working solution is using global variables - ugly, want to find pretty approach
+    - Found working solution, by equating to variable
+    - POT IMPROVEMENT: Algorithm return False if solution not found -> Closest result is not found 
+
+    - Need to handle guesses -> apon further inspection this may be the most difficult aspect, even without sanitisation/validation
+    - 2 step process, ensure if input in correct form, then calculate input + score
+    - Calulate result of Input, and Check if Valid
+    - Desired Input Form -> "3 + 4 = 7, 7 * 2 = 14, 14 * 3 = 42"
+    - Check Form of Input, then if Arithmetic is Correct
+    - Input Validation was easier than expected
+
+    -Optimisation, need to find means of calculating best score when no exact solution is found
+    -Roughly 10-15% of seeds have no exact solution (Monte Carlo Simulation)
+    Combo (Large:Small)	    Approx. Success Rate
+    0 Large / 6 Small	    ~93–95%
+    1 Large / 5 Small	    ~90–93%
+    2 Large / 4 Small	    ~88–90%
+    3 Large / 3 Small	    ~85–88%
+    4 Large / 2 Small	    ~80–85%
