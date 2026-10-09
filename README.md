@@ -1,71 +1,22 @@
-# Countdown
+# Countdown numbers round
 
-A command-line version of the *Countdown* numbers round, with an exhaustive search solver that finds an exact solution or the closest reachable value.
+A Python command-line game with a solver for the Countdown numbers round. I represented each search state as a sorted multiset of available numbers. Combining a pair reduces the state by one; memoisation skips equivalent states reached by different paths.
 
-Given six numbers and a target between 101 and 999, combine the numbers with `+ - × ÷` (positive integers only, each number used at most once) to reach the target.
+The solver returns steps for an exact answer or the nearest reachable value. It uses positive integer results and exact division. A separate regex parser checks submitted arithmetic against available numbers, while a background thread searches during player input.
 
-## Highlights
+The 14 existing tests passed during this review. The previous timing and target-coverage table had no saved run record, so it has been removed. `scripts/benchmark.py` can generate new measurements.
 
-- **Exhaustive solver** over a combinatorial search tree, with memoisation on sorted multisets to collapse equivalent states. It searches a full six-number draw in under 0.1 s on average.
-- **Closest-answer fallback** when no exact solution exists.
-- **Strict answer validation**: a regex parser plus checks for number availability, arithmetic correctness and exact division, with a distance-based score.
-- **Background solving**: the solver runs on a separate thread while the player thinks.
-- **Tested and dependency-free**: 14 unit tests, standard library only.
+## Play
 
-## Usage
+Python 3.9+ and the standard library, from this folder:
 
-Requires Python 3.9+.
-
-```bash
-pip install -e .
-countdown            # or: PYTHONPATH=src python -m countdown
+```sh
+PYTHONPATH=src python3 -m countdown
+PYTHONPATH=src python3 -m unittest discover -s tests
 ```
 
-Enter answers as comma-separated steps:
+Enter comma-separated arithmetic steps using the drawn numbers, such as `3 + 4 = 7, 7 * 2 = 14`. An exact result earns 10 points; otherwise the score is `max(0, 10 - distance)`. Optional installation with `python3 -m pip install -e .` adds the `countdown` command.
 
-```
-3 + 4 = 7, 7 * 2 = 14, 14 * 3 = 42
-```
+There is no player countdown timer. The validator can accept zero-valued intermediate results, unlike the solver's positive-integer rule. [Development notes](docs/development-log.md) explain the search and remaining checks.
 
-Scoring: 10 for an exact hit, otherwise `10 − distance` (minimum 0).
-
-As a library:
-
-```python
-from countdown import solve, closest
-
-solve([1, 2, 3, 4, 25, 100], 142)
-# ['2 - 1 = 1', '3 - 1 = 2', '25 + 4 = 29', '100 - 29 = 71', '71 * 2 = 142']
-```
-
-## Solver performance
-
-Fraction of targets (101–999) reachable from a random draw, estimated from 200 random draws per configuration (`python scripts/benchmark.py --trials 200 --seed 1`):
-
-| Large numbers | Targets reachable | Mean search time |
-|---|---|---|
-| 0 | 87.0% | 0.03 s |
-| 1 | 97.7% | 0.05 s |
-| 2 | 97.8% | 0.07 s |
-| 3 | 94.4% | 0.09 s |
-| 4 | 91.3% | 0.09 s |
-
-## Project structure
-
-```
-src/countdown/
-  solver.py       exhaustive search: solve(), closest(), reachable()
-  validator.py    answer parsing and scoring
-  game.py         interactive CLI round
-tests/            unit tests for solver and validator
-scripts/          Monte Carlo benchmark
-docs/             development log: design decisions and fixes
-```
-
-```bash
-PYTHONPATH=src python -m unittest discover -s tests
-```
-
-## License
-
-MIT
+[MIT licence](LICENSE)

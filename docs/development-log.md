@@ -1,29 +1,13 @@
-# Development Log
+# Search and game notes
 
-Design decisions and lessons from building the project (June 2025).
+I kept solver, answer validation and interactive play in separate modules. The solver returns a path instead of storing a global result, so the game can print the arithmetic that produced the answer.
 
-## Design decisions
+Search states are sorted tuples of the remaining numbers. A visited set removes equivalent states; duplicate pairs and identity operations are skipped. Each pair yields addition, multiplication, positive subtraction and exact division where legal. Search stops on an exact target, or keeps the nearest value if none is found.
 
-- **Functional over OOP.** The problem is a pipeline of pure transformations (draw → solve → validate → score), so plain functions fit better than classes.
-- **`try/except` for input validation.** I prototyped a hand-rolled `is_number` check (O(n) time, O(1) space) to avoid exceptions. Re-assigning values to convert types was awkward and no clearer, so I reverted to `try/except`.
-- **Solver as tree search.** Each node is a set of numbers; each edge merges two of them with one operator, shrinking the set by one. The branching factor is at most 6 per pair (`+`, `*`, two `-`, two `/`).
-- **Track the path.** The first version returned only a boolean. Carrying the step history with each node lets the solver print a working solution.
-- **Concurrency.** The solver runs in a background thread while the player thinks.
+The game starts the solver in a background thread while it waits for the player's answer. There is no timer on that answer; a 30-second join limits the later wait for the solver.
 
-## Problems found and fixed
+The regex parser accepts a list of arithmetic steps. Validation consumes operands from an available-number pool and appends each result. It checks reuse and arithmetic, but does not reject every non-positive intermediate result. That gap should be closed before describing validation as enforcing all game rules.
 
-| Problem | Resolution |
-|---|---|
-| Recursion unwound step by step, so only the final step of a solution was returned | Pass the accumulated history down and return it on success |
-| Global variable used to carry the result | Return values instead |
-| No answer when an exact solution doesn't exist | Added `closest()`, which tracks the best reachable value |
-| Duplicate states explored repeatedly (exponential blow-up) | Memoise on sorted tuples of the remaining numbers |
-| Negative intermediates and `a / b` float checks via `str(n)` | Positive integers only, exact division with `%` |
-| `break` on a failed division skipped the reverse-division case | Enumerate moves per ordered pair with `continue` semantics |
-| Malformed input could raise `IndexError` | Regex-based parser raising `ValueError` |
+Run a seeded benchmark from the repository root with `PYTHONPATH=src python3 scripts/benchmark.py --trials 200 --seed 1`. It measures reachable targets for sampled draws, not the speed of every call to `solve()`. The earlier README table was removed because its run environment and raw output were not saved.
 
-## Ideas not yet done
-
-- Enforce a countdown timer on the player's input.
-- Prune symmetric moves further to speed up the exhaustive search.
-- Learned or heuristic move ordering to reach a first solution faster.
+Possible next work: a player timer and further move ordering. These are not implemented features. Original development history remains in Git.
