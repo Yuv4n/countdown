@@ -4,7 +4,7 @@ A Python command-line game with a solver for the Countdown numbers round. I repr
 
 The solver returns steps for an exact answer or the nearest reachable value. It uses positive integer results and exact division. A separate regex parser checks submitted arithmetic against available numbers, while a background thread searches during player input.
 
-The 14 existing tests passed during this review. The previous timing and target-coverage table had no saved run record, so it has been removed. `scripts/benchmark.py` can generate new measurements.
+The repository includes 14 tests. It has no saved timing or target-coverage results; `scripts/benchmark.py` generates new measurements.
 
 ## Play
 
