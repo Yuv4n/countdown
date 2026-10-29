@@ -16,7 +16,7 @@ PYTHONPATH=src python3 -m countdown
 PYTHONPATH=src python3 -m unittest discover -s tests
 ```
 
-Enter steps such as `3 + 4 = 7, 7 * 2 = 14`. An exact result scores 10; otherwise `max(0, 10 - distance)`.
+Optionally `python3 -m pip install -e .` adds a `countdown` command. Enter steps such as `3 + 4 = 7, 7 * 2 = 14`. An exact result scores 10; otherwise `max(0, 10 - distance)`.
 
 ## Limits
 
