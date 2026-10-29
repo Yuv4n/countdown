@@ -1,22 +1,25 @@
-# Countdown numbers round
+# Countdown numbers solver
 
-A Python command-line game with a solver for the Countdown numbers round. I represented each search state as a sorted multiset of available numbers. Combining a pair reduces the state by one; memoisation skips equivalent states reached by different paths.
+A Python command-line version of the Countdown numbers round, with a solver that finds an exact answer or the nearest reachable value.
 
-The solver returns steps for an exact answer or the nearest reachable value. It uses positive integer results and exact division. A separate regex parser checks submitted arithmetic against available numbers, while a background thread searches during player input.
+- **Search:** each state is a sorted multiset of the remaining numbers; combining a pair shrinks it by one, and memoisation skips equivalent states reached by different paths.
+- **Rules:** positive integer results and exact division only.
+- **Play:** a regex parser validates the player's arithmetic against the drawn numbers while a background thread searches.
+- **Tests:** 14 unit tests; `scripts/benchmark.py` generates timing measurements.
 
-The repository includes 14 tests. It has no saved timing or target-coverage results; `scripts/benchmark.py` generates new measurements.
+## Run
 
-## Play
-
-Python 3.9+ and the standard library, from this folder:
+Python 3.9+, standard library only:
 
 ```sh
 PYTHONPATH=src python3 -m countdown
 PYTHONPATH=src python3 -m unittest discover -s tests
 ```
 
-Enter comma-separated arithmetic steps using the drawn numbers, such as `3 + 4 = 7, 7 * 2 = 14`. An exact result earns 10 points; otherwise the score is `max(0, 10 - distance)`. Optional installation with `python3 -m pip install -e .` adds the `countdown` command.
+Enter steps such as `3 + 4 = 7, 7 * 2 = 14`. An exact result scores 10; otherwise `max(0, 10 - distance)`.
 
-There is no player countdown timer. The validator can accept zero-valued intermediate results, unlike the solver's positive-integer rule. [Development notes](docs/development-log.md) explain the search and remaining checks.
+## Limits
+
+No player timer. The validator accepts zero-valued intermediate results, which the solver does not. See the [development notes](docs/development-log.md).
 
 [MIT licence](LICENSE)
